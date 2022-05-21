@@ -14,6 +14,32 @@ const sequelize = new Sequelize(
 )
 
 module.exports = {
+    getCountries: (req, res) => {
+        sequelize.query(`
+        SELECT * FROM countries
+        `).then(dbRes => res.status(200).send(dbRes[0]))
+    },
+    createCity: (req, res) => {
+        const {name, rating, countryId} = req.body;
+        sequelize.query(`
+        INSERT INTO cities (name, rating, country_id)
+        VALUES ('${name}', ${rating}, ${countryId})
+        `).then(dbRes => res.status(200).send(dbRes[0]))
+    },
+    deleteCity: (req, res) => {
+        const {id} = req.params;
+        sequelize.query(`
+        DELETE FROM cities
+        WHERE city_id = ${id}
+        `).then(dbRes => res.status(200).send(dbRes[0]))
+    },
+    getCities: (req, res) => {
+        sequelize.query(`
+        SELECT cities.city_id, cities.name city, cities.rating, countries.country_id, countries.name country FROM cities
+        JOIN countries
+        ON cities.country_id = countries.country_id
+        `).then(dbRes => res.status(200).send(dbRes[0]))
+    },
     seed: (req, res) => {
         sequelize.query(`
             drop table if exists cities;
